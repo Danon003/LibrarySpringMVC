@@ -1,22 +1,44 @@
 package ru.danon.spring.models;
 
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import org.springframework.format.annotation.DateTimeFormat;
 
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
+import java.util.Date;
+import java.util.List;
+
+@Entity
+@Table(name = "person")
 public class Person {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
 
+    @Column(name = "full_name")
     @NotEmpty(message="ФИО не должно быть пустым")
     @Size(min=2, max=200, message = "Имя должно быть от 2 до 200 символов длиной")
     private String fullName;
+
+    @Column(name = "year_birth")
     @NotNull(message = "Год рождения не должен быть пустым")
-    @Min(value = 1900, message = "Год рождения должен быть больше, чем 1900")
-    private int yearBirth;
+    @DateTimeFormat(pattern = "dd/MM/yyyy")
+    @Temporal(TemporalType.DATE)
+    private LocalDate yearBirth;
+
+    @OneToMany(mappedBy = "owner")
+    private List<Book> books;
 
     public Person() {}
-    public Person(String fullName, int yearBirth) {
+    public Person(String fullName, LocalDate yearBirth) {
         this.fullName = fullName;
         this.yearBirth = yearBirth;
     }
@@ -29,11 +51,11 @@ public class Person {
         this.fullName = fullName;
     }
 
-    public int getYearBirth() {
+    public LocalDate getYearBirth() {
         return yearBirth;
     }
 
-    public void setYearBirth(int yearBirth) {
+    public void setYearBirth(LocalDate yearBirth) {
         this.yearBirth = yearBirth;
     }
 
@@ -43,5 +65,22 @@ public class Person {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public List<Book> getBooks() {
+        return books;
+    }
+
+    public void setBooks(List<Book> books) {
+        this.books = books;
+    }
+
+    public int getAge() {
+        if (this.yearBirth == null) {
+            return 0;
+        }
+
+        LocalDate today = LocalDate.now();
+        return Period.between(yearBirth, today).getYears();
     }
 }

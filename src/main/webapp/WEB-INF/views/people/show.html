@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8" xmlns:th="http://www.thymeleaf.org">
+    <meta charset="UTF-8">
     <title>Show</title>
 </head>
 <body>
+
 <p th:text="${person.getFullName() + ', ' + person.getYearBirth()}">VALUE</p>
 
 <div th:if="${books.isEmpty()}">
@@ -16,9 +17,17 @@
     <hr/>
     <b>Книги:</b>
     <br/>
-    <table th:each="book : ${books}">
-        <tr th:text="${book.name + ', ' + book.author + ', ' + book.year}">book</tr>
+
+    <table>
+        <tr th:each="book : ${books}">
+            <td
+                    th:style="'color: ' + (${book.taken} ? 'red' : 'black')"
+                    th:text="${book.name + ', ' + book.author + ', ' + book.year}">
+                book
+            </td>
+        </tr>
     </table>
+
     <hr/>
 </div>
 
@@ -29,5 +38,6 @@
 <form th:method="DELETE" th:action="@{/people/{id}(id=${person.getId()})}">
     <input type="submit" value="Удалить"/>
 </form>
+
 </body>
 </html>
